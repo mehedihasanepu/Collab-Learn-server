@@ -99,11 +99,11 @@ async function run() {
             res.send(result);
         })
 
-        app.post('/submittedAssignment', async (req, res) => {
-            const assignment = req.body;
-            const result = await submittedAssignmentCollection.insertOne(assignment);
-            res.send(result);
-
+        app.get('submittedAssignment/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await submittedAssignmentCollection.findOne(query);
+            res.send(result)
         })
 
 
@@ -114,11 +114,17 @@ async function run() {
 
 
 
+        app.post('/submittedAssignment', async (req, res) => {
+            const assignment = req.body;
+            const result = await submittedAssignmentCollection.insertOne(assignment);
+            res.send(result);
+
+        })
 
 
 
 
-
+        
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
