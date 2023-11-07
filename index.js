@@ -107,13 +107,6 @@ async function run() {
         })
 
 
-
-
-
-
-
-
-
         app.post('/submittedAssignment', async (req, res) => {
             const assignment = req.body;
             const result = await submittedAssignmentCollection.insertOne(assignment);
@@ -123,8 +116,50 @@ async function run() {
 
 
 
+        app.put('/submittedAssignment/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const options = { upsert: true };
+            const updateSubmittedAssignment = req.body;
+            const product = {
+                $set: {
+                    pdfLink: updateSubmittedAssignment.pdfLink,
+                    quickNote: updateSubmittedAssignment.quickNote,
+                    feedback: updateSubmittedAssignment.feedback,
+                    title: updateSubmittedAssignment.title,
+                    giveMark: updateSubmittedAssignment.giveMark,
+                    marks: updateSubmittedAssignment.marks,
+                    examineeEmail: updateSubmittedAssignment.examineeEmail,
+                    examineeName: updateSubmittedAssignment.examineeName,
+                    status: updateSubmittedAssignment.status
 
-        
+                }
+            }
+            const result = await submittedAssignmentCollection.updateOne(filter, product, options)
+            res.send(result)
+        })
+
+
+        app.delete('/allAssignments/:id', async (req, res) => {
+            const id = req.params.id;
+            console.log(id);
+            const query = { _id: new ObjectId(id) }
+            const result = await assignmentCollection.deleteOne(query);
+            res.send(result);
+        })
+
+
+
+
+
+
+
+
+
+
+
+
+
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
