@@ -90,6 +90,14 @@ async function run() {
 
 
 
+        // submitted Assignment 
+
+
+        app.get('/submittedAssignment', async (req, res) => {
+            const cursor = submittedAssignmentCollection.find();
+            const result = await cursor.toArray();
+            res.send(result);
+        })
 
         app.post('/submittedAssignment', async (req, res) => {
             const assignment = req.body;
