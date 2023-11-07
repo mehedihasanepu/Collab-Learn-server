@@ -30,6 +30,7 @@ async function run() {
         // await client.connect();
 
         const assignmentCollection = client.db('collabLearn').collection('allAssignment');
+        const submittedAssignmentCollection = client.db('collabLearn').collection('submittedAssignment');
 
 
 
@@ -58,6 +59,25 @@ async function run() {
         })
 
 
+        app.put('/assignment/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const options = { upsert: true };
+            const updateAssignment = req.body;
+            const product = {
+                $set: {
+                    title: updateAssignment.title,
+                    imgURL: updateAssignment.imgURL,
+                    marks: updateAssignment.marks,
+                    difficulty: updateAssignment.difficulty,
+                    dueDate: updateAssignment.dueDate,
+                    description: updateAssignment.description
+                }
+            }
+            const result = await assignmentCollection.updateOne(filter, product, options)
+            res.send(result)
+        })
+
 
         app.delete('/allAssignments/:id', async (req, res) => {
             const id = req.params.id;
@@ -71,7 +91,12 @@ async function run() {
 
 
 
+        app.post('/submittedAssignment', async (req, res) => {
+            const assignment = req.body;
+            const result = await submittedAssignmentCollection.insertOne(assignment);
+            res.send(result);
 
+        })
 
 
 
