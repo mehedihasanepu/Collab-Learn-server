@@ -89,22 +89,22 @@ async function run() {
             const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' })
 
             res.cookie('token', token, {
-                    httpOnly: true,
-                    secure: true,
-                    sameSite: 'none',
-                    maxAge: 60 * 60 * 1000
+                httpOnly: true,
+                secure: true,
+                sameSite: 'none',
+                maxAge: 60 * 60 * 1000
 
-                }).send({ success: true })
+            }).send({ success: true })
         })
 
         app.post('/logout', async (req, res) => {
             const user = req.body;
             console.log('logout user :', user);
             res.clearCookie('token', {
-                    maxAge: 0,
-                    secure: true,
-                    sameSite: 'none'
-                }).send({ success: true })
+                maxAge: 0,
+                secure: true,
+                sameSite: 'none'
+            }).send({ success: true })
         })
 
 
@@ -226,6 +226,26 @@ async function run() {
             const query = { _id: new ObjectId(id) }
             const result = await assignmentCollection.deleteOne(query);
             res.send(result);
+        })
+
+
+
+        // pagination api
+        app.get('/pagination', async (req, res) => {
+            const page = parseInt(req.query.page);
+            const size = parseInt(req.query.size);
+
+            const result = await assignmentCollection.find()
+                .skip(page * size)
+                .limit(size)
+                .toArray();
+            res.send(result)
+        })
+
+
+        app.get('/paginationCount', async (req, res) => {
+            const count = await assignmentCollection.estimatedDocumentCount()
+            res.send({ count })
         })
 
 
