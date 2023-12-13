@@ -1,7 +1,7 @@
 const express = require('express')
 const cors = require('cors');
 const cookieParser = require('cookie-parser')
-var jwt = require('jsonwebtoken');
+// var jwt = require('jsonwebtoken');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 require('dotenv').config()
@@ -11,7 +11,6 @@ const port = process.env.PORT || 5000;
 app.use(cors(
     {
         origin: [
-            'http://localhost:5173',
             'https://collab-learn-d959c.web.app',
             'https://collab-learn-d959c.firebaseapp.com'
         ],
@@ -36,31 +35,31 @@ const client = new MongoClient(uri, {
 
 
 // middleware
-const logger = (req, res, next) => {
-    console.log('called: ', req.host, req.originalUrl);
-    next();
-}
+// const logger = (req, res, next) => {
+//     console.log('called: ', req.host, req.originalUrl);
+//     next();
+// }
 
-const VerifyToken = async (req, res, next) => {
-    const token = req.cookies?.token;
-    console.log('value of the token in middleware: ', token);
-    console.log(token);
-    if (!token) {
-        return res.status(401).send({ message: 'unauthorized' })
-    }
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
-        // error 
-        if (err) {
-            console.log(err);
-            return res.status(401).send({ message: 'unauthorized' })
-        }
-        // if token is valid then it would be decoded 
-        console.log('valid token :', decoded);
-        req.user = decoded;
-        next()
-    })
+// const VerifyToken = async (req, res, next) => {
+//     const token = req.cookies?.token;
+//     console.log('value of the token in middleware: ', token);
+//     console.log(token);
+//     if (!token) {
+//         return res.status(401).send({ message: 'unauthorized' })
+//     }
+//     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+//         // error 
+//         if (err) {
+//             console.log(err);
+//             return res.status(401).send({ message: 'unauthorized' })
+//         }
+//         // if token is valid then it would be decoded 
+//         console.log('valid token :', decoded);
+//         req.user = decoded;
+//         next()
+//     })
 
-}
+// }
 
 
 
@@ -83,19 +82,21 @@ async function run() {
 
         // auth related API 
 
-        app.post('/jwt', async (req, res) => {
-            const user = req.body;
-            console.log('user form token: ', user);
-            const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' })
-
-            res.cookie('token', token, {
-                httpOnly: true,
-                secure: true,
-                sameSite: 'none',
-                maxAge: 60 * 60 * 1000
-
-            }).send({ success: true })
-        })
+        /*         app.post('/jwt', async (req, res) => {
+                    const user = req.body;
+                    console.log('user form token: ', user);
+                    const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' })
+        
+                    res.cookie('token', token, {
+                        httpOnly: true,
+                        secure: true,
+                        sameSite: 'none',
+                        maxAge: 60 * 60 * 1000
+        
+                    }).send({ success: true })
+                })
+                
+                */
 
         app.post('/logout', async (req, res) => {
             const user = req.body;
@@ -169,10 +170,10 @@ async function run() {
 
 
 
-        // submitted Assignment 
+        // submitted Assignment
 
-
-        app.get('/submittedAssignment', logger, VerifyToken, async (req, res) => {
+        // logger, VerifyToken,
+        app.get('/submittedAssignment', async (req, res) => {
             const cursor = submittedAssignmentCollection.find();
             const result = await cursor.toArray();
             res.send(result);
@@ -250,18 +251,8 @@ async function run() {
 
 
 
-
-
-
-
-
-
-
-
-
-
         // Send a ping to confirm a successful connection
-        await client.db("admin").command({ ping: 1 });
+        // await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
         // Ensures that the client will close when you finish/error
